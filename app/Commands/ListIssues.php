@@ -15,10 +15,23 @@ class ListIssues extends Command {
 
     public function handle()
     {
-        $git = new Git();
+//        $git = new Git();
         $bucketDesk = new Bucketdesk();
-//        $this->info($git->currentBranch());
-        dd($bucketDesk->issues());
-        $this->notify("Hello Web Artisan", "Love beautiful..", "icon.png");
+        $bucketDesk->issues()->each(function($issue){
+            $this->info($this->infoDescription($issue));
+        });
+    }
+
+    private function infoDescription($issue){
+        return collect([
+            //str_pad($issue->id, 8),
+            str_pad($issue->type(), 12),
+            str_pad($issue->priority(), 12),
+            str_pad($issue->status(), 8),
+            str_pad($issue->username, 18),
+            "#" . str_pad($issue->issue_id, 12),
+            str_pad($issue->repo(), 12),
+            $issue->title,
+        ])->implode(" ");
     }
 }
