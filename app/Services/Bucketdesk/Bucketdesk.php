@@ -16,11 +16,20 @@ class Bucketdesk
         $this->api_token = config('bucketdesk.api_token');
     }
 
+    public function headers(){
+        return ["Authorization" => "Bearer {$this->api_token}"];
+    }
+
+    public function zttp()
+    {
+        return Zttp::withHeaders($this->headers());
+    }
+
     /**
      * @return array<Issue>
      */
     public function issues(){
-        $json = Zttp::get($this->url . 'issues')->json();
+        $json = $this->zttp()->get($this->url . 'issues')->json();
         return collect($json)->map(function($issue){
             return new Issue($issue);
         });
@@ -32,7 +41,7 @@ class Bucketdesk
      * @return Issue
      */
     public function issue($repo, $issue){
-        $json = Zttp::get($this->url . "issues/$repo/$issue")->json();
+        $json = $this->zttp()->get($this->url . "issues/$repo/$issue")->json();
         return new Issue($json);
     }
 
@@ -44,11 +53,11 @@ class Bucketdesk
      */
     public function updateIssueStatus(Issue $issue, $status)
     {
-        $json = Zttp::put($this->url . "issues/{$issue->repo()}/{$issue->issue_id}", ["status" => $status])->json();
+        $json = $this->zttp()->put($this->url . "issues/{$issue->repo()}/{$issue->issue_id}", ["status" => $status])->json();
         return new Issue($json);
     }
 
     public function createPullRequest(Issue $issue){
-        return Zttp::post($this->url . "issues/{$issue->repo()}/{$issue->issue_id}/pr")->json();
+        return $this->zttp()->post($this->url . "issues/{$issue->repo()}/{$issue->issue_id}/pr")->json();
     }
 }
