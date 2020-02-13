@@ -33,6 +33,11 @@ class Git
         return $this;
     }
 
+    public function push(){
+        $this->execute("git pull");
+        return $this;
+    }
+
     public function nah(){
         return $this->execute('git reset --hard; git clean -df;');
     }

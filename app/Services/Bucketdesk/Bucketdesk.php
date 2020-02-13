@@ -42,9 +42,13 @@ class Bucketdesk
      * @param $status
      * @return Issue
      */
-    public function updateIssueStatus($repo, $issue, $status)
+    public function updateIssueStatus(Issue $issue, $status)
     {
-        $json = Zttp::put($this->url . "issues/$repo/$issue", ["status" => $status])->json();
+        $json = Zttp::put($this->url . "issues/{$issue->repo()}/{$issue->issue_id}", ["status" => $status])->json();
         return new Issue($json);
+    }
+
+    public function createPullRequest(Issue $issue){
+        return Zttp::post($this->url . "issues/{$issue->repo()}/{$issue->issue_id}/pr")->json();
     }
 }

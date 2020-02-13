@@ -69,7 +69,14 @@ class Issue
     }
 
     public function updateStatus($status){
-        return (new Bucketdesk)->updateIssueStatus($this->repo(), $this->issue_id, $status);
+        return (new Bucketdesk)->updateIssueStatus($this, $status);
+    }
+
+    public function createPr(){
+        if ($this->pull_request) {
+            throw new \Exception("Pull request already created");
+        }
+        return (new Bucketdesk)->createPullRequest($this);
     }
 
     public function __get($name)
