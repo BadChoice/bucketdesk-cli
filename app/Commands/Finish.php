@@ -4,16 +4,13 @@ namespace App\Commands;
 
 use App\Models\Issue;
 use App\Services\Bucketdesk\Bucketdesk;
-use App\Services\Git\Git;
-use Illuminate\Console\Scheduling\Schedule;
 use LaravelZero\Framework\Commands\Command;
 
 class Finish extends Command
 {
+    protected $signature = 'finish {issue?}';
 
-    protected $signature = 'finish {issue}';
-
-    protected $description = 'Command description';
+    protected $description = 'Creates a pull request for the issue';
 
     use IssueCommand;
 

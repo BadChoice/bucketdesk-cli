@@ -8,7 +8,7 @@ class ShowIssues extends Command {
 
     protected $signature = 'show {issue?} {repo?}';
 
-    protected $description = 'Get a list of issues';
+    protected $description = 'Get a list of top issues, or show one, run issues show current to show the info of the current one, or `issues open` to show it on browser';
 
     use IssueCommand;
 
@@ -17,7 +17,7 @@ class ShowIssues extends Command {
         if ($this->argument('issue')) {
             $issue = $this->getIssueFromArguments();
             if (! $issue) { return $this->warn('Issue not found'); }
-            return $this->info($this->infoDescription($issue));
+            return $this->fullInfoDescription($issue);
         }
         $this->bucketDesk->issues()->each(function($issue){
             $this->info($this->infoDescription($issue));
@@ -54,5 +54,27 @@ class ShowIssues extends Command {
             str_pad($issue->repo(), 12),
             $issue->title,
         ])->implode(" ");
+    }
+
+    private function fullInfoDescription($issue){
+        $this->info("");
+        $this->info("Issue Id:     #{$issue->id}");
+        $this->info("Repo:         #{$issue->repo()}");
+        $this->info("Status:       {$issue->status()}, {$issue->type()},  {$issue->priority()}");
+        $this->info("Assigned to:  {$issue->username}");
+
+        $this->info("\n" . $issue->link() . "\n");
+
+        if ($issue->backlog){
+            $this->info("IN BACKLOG");
+        }
+
+        $this->info("");
+        $this->info("Description:");
+        $this->info($issue->title);
+        if ($issue->pull_request) {
+            $this->info("\nPull Request:" . $issue->pull_request . "\n");
+        }
+        $this->info("");
     }
 }

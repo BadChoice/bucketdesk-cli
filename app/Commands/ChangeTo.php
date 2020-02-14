@@ -3,16 +3,13 @@
 namespace App\Commands;
 
 use App\Models\Issue;
-use App\Services\Bucketdesk\Bucketdesk;
-use App\Services\Git\Git;
-use Illuminate\Console\Scheduling\Schedule;
 use LaravelZero\Framework\Commands\Command;
 
 class ChangeTo extends Command
 {
     protected $signature = 'changeTo {issue}';
 
-    protected $description = 'Command description';
+    protected $description = 'Marks the issue as open and creates the branch from dev to start working on it';
 
     use IssueCommand;
 
