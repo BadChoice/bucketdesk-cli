@@ -2,10 +2,7 @@
 
 namespace App\Commands;
 
-use App\Services\Bucketdesk\Bucketdesk;
-use Illuminate\Console\Scheduling\Schedule;
 use LaravelZero\Framework\Commands\Command;
-use App\Services\Git\Git;
 
 class ShowIssues extends Command {
 
@@ -13,20 +10,14 @@ class ShowIssues extends Command {
 
     protected $description = 'Get a list of issues';
 
-    protected $git;
-    protected $bucketDesk;
-
-    public function __construct()
-    {
-        parent::__construct();
-        $this->bucketDesk  = new Bucketdesk();
-        $this->git         = new Git();
-    }
+    use IssueCommand;
 
     public function handle()
     {
         if ($this->argument('issue')) {
-            return $this->showIssue($this->argument('issue'));
+            $issue = $this->getIssueFromArguments();
+            if (! $issue) { return $this->warn('Issue not found'); }
+            return $this->info($this->infoDescription($issue));
         }
         $this->bucketDesk->issues()->each(function($issue){
             $this->info($this->infoDescription($issue));
@@ -34,6 +25,7 @@ class ShowIssues extends Command {
     }
 
     private function showIssue($issueId){
+        if ($issueId == 'current'){ return $this->showCurrentIssue(); }
         $repoName   = $this->argument('repo') ?? $this->git->getRepoName();
         $issue      = $this->bucketDesk->issue($repoName, $issueId);
         if ($issue->attributes == null) {
@@ -41,6 +33,14 @@ class ShowIssues extends Command {
             return;
         }
         $this->info($this->infoDescription($issue));
+    }
+
+    private function showCurrentIssue(){
+        $found = $this->autoFindIssue();
+        if (! $found->attributes) {
+            return $this->warn("Issue not found");
+        }
+        return $this->info($this->infoDescription($found));
     }
 
     private function infoDescription($issue){

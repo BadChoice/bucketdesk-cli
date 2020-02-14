@@ -15,28 +15,28 @@ class Finish extends Command
 
     protected $description = 'Command description';
 
+    use IssueCommand;
+
     public function handle()
     {
-        $git = new Git();
-        $git->push();
+        $this->git->push();
         $issue = $this->fetchIssue();
         if ($issue->pull_request) {
             $this->info("Pull request already exists: " . $issue->pull_request);
-            return $git->checkout('dev');
+            return $this->git->checkout('dev');
         }
         $result = (new Bucketdesk)->createPullRequest($issue);
         $this->info("here is the link: " . $result->link);
-        $git->checkout('dev');
+        $this->git->checkout('dev');
     }
 
     /**
      * @return Issue
      */
     private function fetchIssue(){
-        $git = new Git();
         $issueId = $this->argument("issue");
-        $repo = $git->getRepoName();
-        return tap( (new Bucketdesk())->issue($repo, $issueId), function($issue) use($issueId, $repo) {
+        $repo = $this->git->getRepoName();
+        return tap( $this->bucketDesk->issue($repo, $issueId), function($issue) use($issueId, $repo) {
             if (!$issue) $this->error("Issue {$issueId} does not exist at repository {$repo}");
         });
     }

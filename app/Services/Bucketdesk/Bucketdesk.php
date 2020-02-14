@@ -42,6 +42,7 @@ class Bucketdesk
      */
     public function issue($repo, $issue){
         $json = $this->zttp()->get($this->url . "issues/$repo/$issue")->json();
+        if ($json == null) return null;
         return new Issue($json);
     }
 

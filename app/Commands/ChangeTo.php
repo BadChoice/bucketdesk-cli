@@ -14,6 +14,7 @@ class ChangeTo extends Command
 
     protected $description = 'Command description';
 
+    use IssueCommand;
 
     public function handle()
     {
@@ -22,12 +23,11 @@ class ChangeTo extends Command
             return;
         }
         $issueBranch = $issue->branch();
-        $git = new Git();
-        if ($git->doesBranchExist($issueBranch)) {
-            $git->checkout($issueBranch)->pull();
+        if ($this->git->doesBranchExist($issueBranch)) {
+            $this->git->checkout($issueBranch)->pull();
         } else {
             $this->info("Branch does not exists, creating it from Dev");
-            $git->checkout('dev')->pull()->checkout($issueBranch, true);
+            $this->git->checkout('dev')->pull()->checkout($issueBranch, true);
             $issue->updateStatus(Issue::STATUS_OPEN);
         }
     }
@@ -36,11 +36,10 @@ class ChangeTo extends Command
      * @return Issue
      */
     private function fetchIssue(){
-        $git = new Git();
         $issueId = $this->argument("issue");
-        $repo = $git->getRepoName();
-        return tap( (new Bucketdesk())->issue($repo, $issueId), function($issue) use($issueId, $repo) {
-            if (!$issue) $this->error("Issue {$issueId} does not exist at repository {$repo}");
+        $repo    = $this->git->getRepoName();
+        return tap( $this->bucketDesk->issue($repo, $issueId), function($issue) use($issueId, $repo) {
+            if (! $issue) $this->error("Issue {$issueId} does not exist at repository {$repo}");
         });
     }
 
