@@ -34,7 +34,7 @@ class Finish extends Command
      * @return Issue
      */
     private function fetchIssue(){
-        return tap ($this->autoFindIssue(), function($issue) {
+        return tap ($this->getIssueFromArguments(), function($issue) {
             if (!$issue) $this->error("Issue not found");
         });
     }

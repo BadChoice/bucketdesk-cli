@@ -83,4 +83,8 @@ class Issue
     {
         return $this->attributes[$name];
     }
+
+    public function link(){
+        return "https://bitbucket.org/{$this->repository["account"]}/{$this->repository["repo"]}/issues/{$this->issue_id}";
+    }
 }
