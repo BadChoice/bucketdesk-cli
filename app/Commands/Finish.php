@@ -34,10 +34,8 @@ class Finish extends Command
      * @return Issue
      */
     private function fetchIssue(){
-        $issueId = $this->argument("issue");
-        $repo = $this->git->getRepoName();
-        return tap( $this->bucketDesk->issue($repo, $issueId), function($issue) use($issueId, $repo) {
-            if (!$issue) $this->error("Issue {$issueId} does not exist at repository {$repo}");
+        return tap ($this->autoFindIssue(), function($issue) {
+            if (!$issue) $this->error("Issue not found");
         });
     }
 }

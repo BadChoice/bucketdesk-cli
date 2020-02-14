@@ -19,9 +19,7 @@ class ChangeTo extends Command
     public function handle()
     {
         $issue = $this->fetchIssue();
-        if (!$issue){
-            return;
-        }
+        if (! $issue){ return; }
         $issueBranch = $issue->branch();
         if ($this->git->doesBranchExist($issueBranch)) {
             $this->git->checkout($issueBranch)->pull();
@@ -36,12 +34,9 @@ class ChangeTo extends Command
      * @return Issue
      */
     private function fetchIssue(){
-        $issueId = $this->argument("issue");
-        $repo    = $this->git->getRepoName();
-        return tap( $this->bucketDesk->issue($repo, $issueId), function($issue) use($issueId, $repo) {
-            if (! $issue) $this->error("Issue {$issueId} does not exist at repository {$repo}");
+        return tap ($this->autoFindIssue(), function($issue) {
+            if (! $issue) $this->error("Issue does not exist ");
         });
     }
-
 
 }
