@@ -16,14 +16,17 @@ class Finish extends Command
 
     public function handle()
     {
+        //TODO : Fer el ref
         $this->git->push();
         $issue = $this->fetchIssue();
         if ($issue->pull_request) {
             $this->info("Pull request already exists: " . $issue->pull_request);
             return $this->git->checkout('dev');
         }
+        //TODO: Posar-hi el #link a la issue
+        //TODO: Fer-lo que sigui de qui toca?
         $result = (new Bucketdesk)->createPullRequest($issue);
-        $this->info("here is the link: " . $result->link);
+        $this->info("here is the link: " . $result->link());
         $this->git->checkout('dev');
     }
 
@@ -31,7 +34,7 @@ class Finish extends Command
      * @return Issue
      */
     private function fetchIssue(){
-        return tap ($this->getIssueFromArguments(), function($issue) {
+        return tap ($this->autoFindIssue(), function($issue) {
             if (!$issue) $this->error("Issue not found");
         });
     }

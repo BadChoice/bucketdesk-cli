@@ -7,7 +7,7 @@ use LaravelZero\Framework\Commands\Command;
 
 class ChangeTo extends Command
 {
-    protected $signature = 'changeTo {issue}';
+    protected $signature = 'changeTo {issue} {repo?}';
 
     protected $description = 'Marks the issue as open and creates the branch from dev to start working on it';
 
