@@ -26,10 +26,17 @@ class Bucketdesk
     }
 
     /**
+     * @param array $params //user, repo, status..
      * @return array<Issue>
      */
-    public function issues(){
-        $json = $this->zttp()->get($this->url . 'issues')->json();
+    public function issues($params = []){
+        $resource = 'issues';
+        if ($params){
+            $resource .= "?" . collect($params)->map(function($value, $key){
+                return "$key=$value";
+            })->implode("&");
+        }
+        $json = $this->zttp()->get($this->url . $resource)->json();
         return collect($json)->map(function($issue){
             return new Issue($issue);
         });

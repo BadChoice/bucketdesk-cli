@@ -3,6 +3,7 @@ namespace App\Commands;
 
 use App\Services\Bucketdesk\Bucketdesk;
 use App\Services\Git\Git;
+use Illuminate\Support\Str;
 
 trait IssueCommand {
     protected $git;

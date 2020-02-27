@@ -2,6 +2,7 @@
 
 namespace App\Commands;
 
+use Illuminate\Support\Str;
 use LaravelZero\Framework\Commands\Command;
 
 class ShowIssues extends Command {
@@ -15,11 +16,21 @@ class ShowIssues extends Command {
     public function handle()
     {
         if ($this->argument('issue')) {
+            if (Str::startsWith($this->argument('issue'), "@")) {
+                return $this->issuesFor($this->argument('issue'));
+            }
             $issue = $this->getIssueFromArguments();
             if (! $issue) { return $this->warn('Issue not found'); }
             return $this->fullInfoDescription($issue);
         }
         $this->bucketDesk->issues()->each(function($issue){
+            $this->info($this->infoDescription($issue));
+        });
+    }
+
+    private function issuesFor($user){
+        $this->info("Issues for..");
+        $this->bucketDesk->issues(["user" => str_replace("@","", $user)])->each(function($issue){
             $this->info($this->infoDescription($issue));
         });
     }
